@@ -3,9 +3,10 @@ from player import Player
 from bomb import Bomb
 
 class BattleGround():
-    def __init__(self, groundMatrix, player, bombSurface, boxGoSurface, boxSatSurface):
+    def __init__(self, groundMatrix, player, player2, bombSurface, boxGoSurface, boxSatSurface):
         self.groundMatrix = groundMatrix
         self.player = player
+        self.player2 = player2
         self.bombSurface = bombSurface
         self.boxGoSurface = boxGoSurface
         self.boxSatSurface = boxSatSurface
@@ -13,6 +14,7 @@ class BattleGround():
         self.groundRect = [[0 for _ in range(17)] for _ in range(17)]
         self.listBomb = []
         self.listBomb.append(player.getListBomb())
+        self.listBomb.append(player2.getListBomb())
         self.rectTemp = self.boxGoSurface.get_rect(center=(-1000, 0))
 
     def drawBattleGround(self, screen):
@@ -25,16 +27,32 @@ class BattleGround():
                 if value == 'g':
                     self.groundRect[i][j] = self.boxGoSurface.get_rect(center=((j+1)*self.boxSize, (i+1)*self.boxSize))
                     self.drawBox(self.boxGoSurface, self.groundRect[i][j], screen)
+                if value == '-':
+                    if self.groundRect[i][j] !=0:
+                        self.groundRect[i][j].centerx=-1000
+                
                 # Lấy giá trị và chỉ mục của phần tử tại hàng i, cột j
                
                 index = (i, j)
+        self.drawObject(screen)
     def drawBox(self, boxSurface, boxRect, screen):
+        # Vẽ Box
         screen.blit(boxSurface, boxRect)
+
+    def drawObject(self, screen):        
+        # Vẽ Bomb
         for bomb in self.player.getListBomb():
             if bomb.getStatus() <= 1:
                 bomb.draw(screen)
             else:
                 bomb.drawBombBang(screen)
+        for bomb in self.player2.getListBomb():
+            if bomb.getStatus() <= 1:
+                bomb.draw(screen)
+            else:
+                bomb.drawBombBang(screen)
+
+        # Vẽ Player
         self.drawPlayer(screen)
 
     def removeBox(self, i, j, screen):
@@ -75,7 +93,10 @@ class BattleGround():
             return True
         return False
     
-    def checkPlayerTouchingBombBang(self, screen):
+    def checkPlayer_BoxTouchingBombBang(self, screen):
+        self.listBomb = []
+        self.listBomb.append(self.player.getListBomb())
+        self.listBomb.append(self.player2.getListBomb())
         for ListBombPlayer in self.listBomb:
             for bomb in ListBombPlayer:
                 bombSize = bomb.getBombSize()
@@ -85,6 +106,8 @@ class BattleGround():
                     for bombBang in bomb.getBombBang():
                         if bombBang.areCollidingPlayer(self.player):
                             self.player.gameOver()
+                        if bombBang.areCollidingPlayer(self.player2):
+                            self.player2.gameOver()
                     #Check Bomb touch Block
                     bombIndexI, bombIndexJ = self.getPositionObjectInMatrix(bombRect)
                     bombIndexI-=1
@@ -140,4 +163,15 @@ class BattleGround():
 
     def drawPlayer(self, screen):
         self.player.draw(screen)
+        self.player2.draw(screen)
 
+    def getP1(self):
+        return self.player
+    def getP2(self):
+        return self.player2
+    
+    def getGroundMatrix(self):
+        return self.groundMatrix
+
+    def setGroundMatrix(self, groundMatrix):
+        self.groundMatrix = groundMatrix

@@ -6,6 +6,7 @@ from multiprocessing.connection import wait
 from tkinter import CENTER
 import pygame, sys, random
 from bomb import Bomb
+from converter.bombConvert import bombConvert
 
 class Player():
     def __init__(self, rect, surfaceList, bomb):
@@ -111,5 +112,36 @@ class Player():
             return True
         return False
 
+    def getCenterx(self):
+        return self.rect.centerx
+
+    def getCentery(self):
+        return self.rect.centery
+
+    def getVel(self):
+        return self.vel
+    
+    def getMaxBomb(self):
+        return self.maxBomb
+    
+    def getStatus(self):
+        return self.status
+    
+    def getRecoverTime(self):
+        return self.recoverTime
         
+    def setByDTO(self, playerDTO):
+        self.rect.centerx = playerDTO.get_centerx()
+        self.rect.centery = playerDTO.get_centery()
+        self.status = playerDTO.get_status()
+        self.vel = playerDTO.get_vel()
+        self.maxBomb = playerDTO.get_maxBomb()
+        self.recoverTime = playerDTO.get_recoverTime()
+        self.listBomb = []
+        for bombDTO in playerDTO.get_ListBomb():
+            self.listBomb.append(bombConvert().toBomb(bombDTO))
+
+
+        
+            
             
