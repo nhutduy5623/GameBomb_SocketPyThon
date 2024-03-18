@@ -1,5 +1,5 @@
 import pygame
-from explore import Explore
+from bombBang import BombBang
 
 class Bomb():
     def __init__(self, rect, surfaceList):
@@ -9,10 +9,10 @@ class Bomb():
         self.surface = surfaceList[self.surfaceIndex]
         self.status = 0
         self.timer = 0
-        self.bombExplodeSize = 1        
-        self.Explode_Surface = []
-        self.setUpSurfaceExplore()
-        self.bombExplode = [Explore(self.Explode_Surface[0][0]),Explore(self.Explode_Surface[1][0]),Explore(self.Explode_Surface[2][0]),Explore(self.Explode_Surface[3][0])]
+        self.bombBangSize = 1        
+        self.bombBang_Surface = []
+        self.setUpSurfaceBombBang()
+        self.bombBang = [BombBang(self.bombBang_Surface[0][0]),BombBang(self.bombBang_Surface[1][0]),BombBang(self.bombBang_Surface[2][0]),BombBang(self.bombBang_Surface[3][0])]
 
 
     def animate(self):
@@ -27,9 +27,9 @@ class Bomb():
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
     
-    def drawExplore(self, screen):
-        for explore in self.bombExplode:
-            explore.drawExplore(screen)
+    def drawBombBang(self, screen):
+        for BombBang in self.bombBang:
+            BombBang.drawBombBang(screen)
 
     def placeABomb(seft, playerRect):
         seft.status = 1
@@ -62,29 +62,35 @@ class Bomb():
     def getTimer(self):
         return self.timer
     
-    def Explode(self):
+    def getBombBang(self):
+        return self.bombBang
+    
+    def getBombSize(self):
+        return self.bombBangSize
+    
+    def Bang(self):
         self.status = 2
         i=0
-        for explore in self.bombExplode:
+        for bang in self.bombBang:
             if i==0:
-                explore.setRectCenterX_Y(self.getRect().centerx,self.getRect().centery-35*self.bombExplodeSize)
+                bang.setRectCenterX_Y(self.getRect().centerx,self.getRect().centery-35*self.bombBangSize)
             elif i==1:
-                explore.setRectCenterX_Y(self.getRect().centerx,self.getRect().centery+35*self.bombExplodeSize)
+                bang.setRectCenterX_Y(self.getRect().centerx,self.getRect().centery+35*self.bombBangSize)
             elif i==2:
-                explore.setRectCenterX_Y(self.getRect().centerx-35*self.bombExplodeSize,self.getRect().centery)
+                bang.setRectCenterX_Y(self.getRect().centerx-35*self.bombBangSize,self.getRect().centery)
             elif i==3:
-                explore.setRectCenterX_Y(self.getRect().centerx+35*self.bombExplodeSize,self.getRect().centery)
+                bang.setRectCenterX_Y(self.getRect().centerx+35*self.bombBangSize,self.getRect().centery)
             i+=1
         
     
     def hide(self):
         self.rect = self.surface.get_rect(center=(-1000, 0))
-        for explore in self.bombExplode:
-            explore.hide()
+        for bang in self.bombBang:
+            bang.hide()
         self.status = 0
         
 
-    def setUpSurfaceExplore(self):
+    def setUpSurfaceBombBang(self):
         for i in range(1, 5):
             arrayTemp = []
             if i==1:
@@ -96,12 +102,10 @@ class Bomb():
             if i==4:
                 direction = 'right'
             for j in range(1, 11):
-                print(i)
                 skin = pygame.image.load('./img/Bomb/bombbang_'+str(direction)+''+str(j)+'.png')
-                print(direction)
                 if i==1 or i==2:
                     arrayTemp.append(pygame.transform.scale(skin, (50,45*(j+1))))
                 else:
                     arrayTemp.append(pygame.transform.scale(skin, (45*(j+1),50)))
-            self.Explode_Surface.append(arrayTemp)
+            self.bombBang_Surface.append(arrayTemp)
         

@@ -23,10 +23,13 @@ run = False
 
 # Player1
 p1Skin = pygame.image.load('./img/Ske/idle_down (1).png')
+p1SkinGhost = pygame.image.load('./img/ghost3.png')
 p1Surface = pygame.transform.scale(p1Skin, (40,40))
-p1SurfaceList = [p1Surface]
+p1SurfaceGhost = pygame.transform.scale(p1SkinGhost, (40,40))
+p1SurfaceList = [p1Surface, p1SkinGhost]
 p1SurfaceIndex = 0
-p1Rect = p1Surface.get_rect(center=(50,50))
+p1Rect = pygame.Rect(0, 0, 40, 40)
+p1Rect.center = (50, 50)
 
 # Boom
 bombSkin = pygame.image.load('./img/bomb.gif')
@@ -36,6 +39,13 @@ bombSurfaceList = [bombSurface1, bombSurface2]
 bombIndex = 0
 bombSurface = bombSurfaceList[bombIndex]
 bombRect = bombSurface.get_rect(center=(-1000, 100))
+
+
+# Event
+
+# P1 Event
+P1RecoverEvt = pygame.USEREVENT + 11
+
 # BombEvent
 BombAnimateEvt = pygame.USEREVENT + 60
 pygame.time.set_timer(BombAnimateEvt, 200)
@@ -47,7 +57,7 @@ pygame.time.set_timer(CountTimeEvt, 100)
 
 #Ground
 groundMatrix = [
-    ['-','-','g','-','-','-','-','-','-','-','-','-','g','-','-'],
+    ['-','-','-','-','-','-','-','-','-','-','-','-','g','-','-'],
     ['-','s','-','g','-','s','-','g','-','s','-','g','-','s','-'],
     ['g','g','-','s','-','g','-','s','-','g','-','s','-','g','g'],
     ['-','s','-','g','-','s','-','g','-','s','-','g','-','s','-'],
@@ -61,7 +71,7 @@ groundMatrix = [
     ['-','s','-','g','-','s','-','g','-','s','-','g','-','s','-'],
     ['g','g','-','s','-','g','-','s','-','g','-','s','-','g','g'],
     ['-','s','-','g','-','s','-','g','-','s','-','g','-','s','-'],
-    ['-','-','g','-','-','-','-','-','-','-','-','-','g','-','-']
+    ['-','-','-','-','-','-','-','-','-','-','-','-','g','-','-']
 ]
 
 #Box
@@ -95,12 +105,18 @@ def main():
                     bombP1.animate()
                 pygame.time.set_timer(BombAnimateEvt, 200)
             if event.type == CountTimeEvt:
-                p.increaseTimer_ExplodeBomb(100)
+                p.increaseTimer_BombBang(100)
                 pygame.time.set_timer(CountTimeEvt, 100)
+            if event.type == P1RecoverEvt:
+                p.recover()
+                pygame.time.set_timer(P1RecoverEvt, 1000000000)
                 
         clock.tick(60)
         
         battleGround.playerAction()
-        
+        battleGround.checkPlayerTouchingBombBang(screen)
+        if p.isGameOver():
+            p.gameWaiting()
+            pygame.time.set_timer(P1RecoverEvt, 1000)
         redrawScreen(screen, bombP1, battleGround)
 main()

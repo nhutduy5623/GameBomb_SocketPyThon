@@ -9,12 +9,15 @@ from bomb import Bomb
 
 class Player():
     def __init__(self, rect, surfaceList, bomb):
+        self.startRect = [rect.centerx,rect.centery]
         self.rect = rect
-        self.vel = 2
+        self.vel = 4
         self.surfaceList = surfaceList
         self.surface = surfaceList[0]
         self.maxBomb = 1
         self.listBomb = [bomb]
+        self.status = 1
+        self.recoverTime = 0
 
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
@@ -25,24 +28,22 @@ class Player():
     def setSurface_Rect(self, playerRect, indexSurface):
         self.rect = playerRect
         self.surface = self.surfaceList[indexSurface]
+        
 
     def move(self, direction):
-        keys = pygame.key.get_pressed()
-        if direction == "left":
-            if self.ValidNextStep("left"):
-                self.rect.centerx -= self.vel
-
-        if direction == "right":
-            if self.ValidNextStep("right"):
-                self.rect.centerx += self.vel
-
-        if direction == "up":
-            if self.ValidNextStep("up"):
-                self.rect.centery -= self.vel
-
-        if direction == "down":
-            if self.ValidNextStep("down"):
-                self.rect.centery += self.vel
+        if self.status == 1:
+            if direction == "left":
+                if self.ValidNextStep("left"):
+                    self.rect.centerx -= self.vel
+            if direction == "right":
+                if self.ValidNextStep("right"):
+                    self.rect.centerx += self.vel
+            if direction == "up":
+                if self.ValidNextStep("up"):
+                    self.rect.centery -= self.vel
+            if direction == "down":
+                if self.ValidNextStep("down"):
+                    self.rect.centery += self.vel
 
     def ValidNextStep(self, direction):
         if direction == "left":
@@ -59,7 +60,7 @@ class Player():
                 return False
         return True
     
-    def checkTouchingObk(self, Obj):
+    def checkTouchingObj(self, Obj):
         if Obj == 0:
             return False
         if self.rect.colliderect(Obj):
@@ -77,24 +78,38 @@ class Player():
             if self.listBomb[i].getStatus() == 0:
                 self.listBomb[i].setStatus(1)
                 self.listBomb[i].setRectWithPosition(bombRectx,bombRecty)
-                print("BombX = ", bombRectx, "BombY = ", bombRecty)
                 break
-            print("BombX = ", bombRectx, "BombY = ", bombRecty)
     
     def getListBomb(self):
         return self.listBomb
     
-    def increaseTimer_ExplodeBomb(self, value):
+    def increaseTimer_BombBang(self, value):
         for bomb in self.listBomb:
             if bomb.getStatus()==1 or bomb.getStatus()==2:
-               
                 bomb.increaseTimer(value)
                 if bomb.getTimer() == 2000:
-                    print(bomb.getTimer())
-                    bomb.Explode()
-                    print("Có chạy 2")
+                    bomb.Bang()
                 if bomb.getTimer() == 2500:
                     bomb.hide()
-                    print("Có chạy 2")
+
+    def gameOver(self):
+        self.status = 0
+        self.surface = self.surfaceList[1]
+
+    def gameWaiting(self):
+        self.status = 2
+        self.surface = self.surfaceList[1]
+
+    def recover(self):
+        self.surface = self.surfaceList[0]
+        self.rect.centerx = self.startRect[0]
+        self.rect.centery = self.startRect[1]       
+        self.status = 1
+
+    def isGameOver(self):
+        if self.status == 0:
+            return True
+        return False
+
         
             

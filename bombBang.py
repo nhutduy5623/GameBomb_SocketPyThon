@@ -1,12 +1,12 @@
 import pygame
-class Explore():
-    def __init__(self, surfaceExplore):
+class BombBang():
+    def __init__(self, surfaceBombBang):
         self.rect = 1000
-        self.surfaceExplore = surfaceExplore
+        self.surfaceBombBang = surfaceBombBang
         self.bombExplodeSize = 1
 
-    def drawExplore(self, screen):
-        screen.blit(self.surfaceExplore, self.rect)
+    def drawBombBang(self, screen):
+        screen.blit(self.surfaceBombBang, self.rect)
 
     def setRectCenterx(self, value):
         self.rect.centerx=value
@@ -15,7 +15,7 @@ class Explore():
         self.rect.centery=value
 
     def setRectCenterX_Y(self, centerx, centery):
-        self.rect = self.surfaceExplore.get_rect(center=(centerx, centery))
+        self.rect = self.surfaceBombBang.get_rect(center=(centerx, centery))
 
     def setRect(self, rect):
         self.rect = rect
@@ -24,8 +24,12 @@ class Explore():
         return self.rect
     
     def hide(self):
-        self.rect = self.surfaceExplore.get_rect(center=(-1000, 0))
-        self.status = 0  
+        self.rect = self.surfaceBombBang.get_rect(center=(-1000, 0))
+    
+    def areCollidingPlayer(self, obj):
+        if self.rect.colliderect(obj):
+            return True
+        return False      
 
     # def setUpSurfaceExplore(self):
     #     for i in range(1, 5):
