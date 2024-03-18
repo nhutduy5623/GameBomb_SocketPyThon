@@ -93,6 +93,15 @@ boxSatSkin = pygame.image.load('./img/boxsat.png')
 boxGoSurface = pygame.transform.scale(boxGoSkin, (50,50))
 boxSatSurface = pygame.transform.scale(boxSatSkin, (50,50))
 
+#Âm thanh
+sound_Game = pygame.mixer.Sound('sound/playgame.wav')
+playmusic = pygame.USEREVENT + 71
+pygame.time.set_timer(playmusic, 11500)
+sound_Game.play()
+
+sound_BombBang = pygame.mixer.Sound('sound/bomb_bang.wav')
+sound_PlaceBomb = pygame.mixer.Sound('sound/newbomb.wav')
+
 
 
 def redrawScreen(screen, bomb, groundBt):
@@ -127,7 +136,7 @@ def main():
                     bombP1.animate()
                 pygame.time.set_timer(BombAnimateEvt, 200)
             if event.type == CountTimeEvt:
-                p1.increaseTimer_BombBang(100)
+                p1.increaseTimer_BombBang(100, sound_BombBang)
                 pygame.time.set_timer(CountTimeEvt, 100)
             if event.type == P1RecoverEvt:
                 p1.recover()
@@ -135,14 +144,17 @@ def main():
             if event.type == P2RecoverEvt:
                 p2.recover()
                 pygame.time.set_timer(P2RecoverEvt, 1000000000)
+            if event.type == playmusic:
+                sound_Game.play()
         clock.tick(60)
         # Vẽ lại các phần của player2
         # Cập nhật BombP2
         for bomb in p2.listBomb:
             if bomb.status == 2:
+                sound_BombBang.play()
                 bomb.Bang()
 
-        battleGround.playerAction()
+        battleGround.playerAction(sound_PlaceBomb)
         battleGround.checkPlayer_BoxTouchingBombBang(screen)
         if p1.isGameOver():
             p1.gameWaiting()

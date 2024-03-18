@@ -137,7 +137,7 @@ class BattleGround():
                         if self.groundMatrix[bombIndexI][j] == 'g':
                             self.removeBox(bombIndexI, j, screen)
                             # print("4:", bombIndexI, j, self.groundMatrix[bombIndexI][i])
-    def playerAction(self):
+    def playerAction(self, sound_PlaceBomb):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.player.move("left")
@@ -158,7 +158,7 @@ class BattleGround():
         if keys[pygame.K_SPACE]:
             bombRecty, bombRectx = self.getPositionPlayerInMatrix()
             bombRectx*=50; bombRecty*=50
-            self.player.placeABomb(bombRectx, bombRecty)
+            self.player.placeABomb(bombRectx, bombRecty, sound_PlaceBomb)
 
 
     def drawPlayer(self, screen):

@@ -9,6 +9,7 @@ from bomb import Bomb
 from converter.bombConvert import bombConvert
 
 class Player():
+
     def __init__(self, rect, surfaceList, bomb):
         self.startRect = [rect.centerx,rect.centery]
         self.rect = rect
@@ -74,22 +75,24 @@ class Player():
     def getSurface(self):
         return self.surface
     
-    def placeABomb(self, bombRectx, bombRecty):
+    def placeABomb(self, bombRectx, bombRecty, sound_PlaceBomb):
         for i in range(len(self.listBomb)):
             if self.listBomb[i].getStatus() == 0:
                 self.listBomb[i].setStatus(1)
                 self.listBomb[i].setRectWithPosition(bombRectx,bombRecty)
+                sound_PlaceBomb.play()
                 break
     
     def getListBomb(self):
         return self.listBomb
     
-    def increaseTimer_BombBang(self, value):
+    def increaseTimer_BombBang(self, value, sound_BombBang):
         for bomb in self.listBomb:
             if bomb.getStatus()==1 or bomb.getStatus()==2:
                 bomb.increaseTimer(value)
                 if bomb.getTimer() == 2000:
                     bomb.Bang()
+                    sound_BombBang.play()
                 if bomb.getTimer() == 2500:
                     bomb.hide()
 
