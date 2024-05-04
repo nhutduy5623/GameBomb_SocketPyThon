@@ -102,12 +102,11 @@ class BattleGround():
                 bombSize = bomb.getBombSize()
                 bombRect = bomb.getRect()                
                 # Check Bomb touch Player
-                if bomb.getStatus() == 2: 
-                    for bombBang in bomb.getBombBang():
-                        if bombBang.areCollidingPlayer(self.player):
-                            self.player.gameOver()
-                        if bombBang.areCollidingPlayer(self.player2):
-                            self.player2.gameOver()
+                if bomb.getStatus() == 2:
+                    bomb.bombBang[0].surfaceBombBang = bomb.bombBang_Surface[0][bombSize-1]
+                    bomb.bombBang[1].surfaceBombBang = bomb.bombBang_Surface[1][bombSize-1]
+                    bomb.bombBang[2].surfaceBombBang = bomb.bombBang_Surface[2][bombSize-1]
+                    bomb.bombBang[3].surfaceBombBang = bomb.bombBang_Surface[3][bombSize-1]
                     #Check Bomb touch Block
                     bombIndexI, bombIndexJ = self.getPositionObjectInMatrix(bombRect)
                     bombIndexI-=1
@@ -116,27 +115,64 @@ class BattleGround():
                         if i>=15:
                             break
                         if self.groundMatrix[i][bombIndexJ] == 's':
+                            size = i-bombIndexI-2
+                            if size < 0:
+                                bomb.bombBang[1].surfaceBombBang = bomb.bombBang_Surface[1][10]
+                            else:                                
+                                bomb.bombBang[1].surfaceBombBang = bomb.bombBang_Surface[1][size]
                             break
                         if self.groundMatrix[i][bombIndexJ] == 'g':
+                            bomb.bombBang[1].surfaceBombBang = bomb.bombBang_Surface[1][i-bombIndexI-1]
                             self.removeBox(i, bombIndexJ, screen)
+                            break
                             # print("1:", i, bombIndexJ, self.groundMatrix[bombIndexJ][i])
                     for i in range(bombIndexI, bombIndexI-bombSize-1, -1):
                         if self.groundMatrix[i][bombIndexJ] == 's':
+                            size = -2+(i-bombIndexI)*-1
+                            if size < 0:
+                                bomb.bombBang[0].surfaceBombBang = bomb.bombBang_Surface[0][10]
+                            else:                                
+                                bomb.bombBang[0].surfaceBombBang = bomb.bombBang_Surface[0][size]
                             break
                         if self.groundMatrix[i][bombIndexJ] == 'g':
+                            bomb.bombBang[0].surfaceBombBang = bomb.bombBang_Surface[0][-1+(i-bombIndexI)*-1]
                             self.removeBox(i, bombIndexJ, screen)
+                            break
                             # print("2:", i, bombIndexJ, self.groundMatrix[bombIndexJ][i])
                     for j in range(bombIndexJ, bombIndexJ+bombSize+1):
                         if j >=15: 
                             break
-                        if self.groundMatrix[bombIndexI][j] == 'g':
-                            self.removeBox(bombIndexI, j, screen)
-                    for j in range(bombIndexJ, bombIndexJ-bombSize-1, -1):
                         if self.groundMatrix[bombIndexI][j] == 's':
+                            size = i-bombIndexJ-2
+                            if size < 0:
+                                bomb.bombBang[3].surfaceBombBang = bomb.bombBang_Surface[3][10]
+                            else:                                
+                                bomb.bombBang[3].surfaceBombBang = bomb.bombBang_Surface[3][size]
                             break
                         if self.groundMatrix[bombIndexI][j] == 'g':
+                            bomb.bombBang[3].surfaceBombBang = bomb.bombBang_Surface[3][j-bombIndexJ-1]
                             self.removeBox(bombIndexI, j, screen)
+                            break
+                    for j in range(bombIndexJ, bombIndexJ-bombSize-1, -1):
+                        if self.groundMatrix[bombIndexI][j] == 's':
+                            size = -2+(j-bombIndexJ)*-1
+                            if size < 0:
+                                bomb.bombBang[2].surfaceBombBang = bomb.bombBang_Surface[2][10]
+                            else:                                
+                                bomb.bombBang[2].surfaceBombBang = bomb.bombBang_Surface[2][size]
+                            break
+                        if self.groundMatrix[bombIndexI][j] == 'g':
+                            bomb.bombBang[2].surfaceBombBang = bomb.bombBang_Surface[2][-1+(j-bombIndexJ)*-1]
+                            self.removeBox(bombIndexI, j, screen)
+                            break
                             # print("4:", bombIndexI, j, self.groundMatrix[bombIndexI][i])
+
+                    # Check Touching Player
+                    for bombBang in bomb.getBombBang():
+                        if bombBang.areCollidingPlayer(self.player):
+                            self.player.gameOver()
+                        if bombBang.areCollidingPlayer(self.player2):
+                            self.player2.gameOver()
     def playerAction(self, sound_PlaceBomb):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:

@@ -53,6 +53,11 @@ bombP2Rect = bombSurface.get_rect(center=(-1000, 100))
 
 # Event
 
+# Wating=False EventStartGame
+StartGame1 = pygame.USEREVENT + 5
+pygame.time.set_timer(StartGame1, 200000000)
+StartGame2 = pygame.USEREVENT + 6
+pygame.time.set_timer(StartGame2, 200000000)
 # P1 Event
 P1RecoverEvt = pygame.USEREVENT + 11
 
@@ -102,16 +107,26 @@ sound_Game.play()
 sound_BombBang = pygame.mixer.Sound('sound/bomb_bang.wav')
 sound_PlaceBomb = pygame.mixer.Sound('sound/newbomb.wav')
 
+sound_Ready_Go = pygame.mixer.Sound('sound/ReadyGoEffects.mp3')
 
 
-def redrawScreen(screen, bomb, groundBt):
+def redrawScreen(screen, groundBt):
     screen.fill((214, 165, 30))
     groundBt.drawBattleGround(screen)   
+    pygame.display.update()
+
+game_Font = pygame.font.Font('04B_19.ttf', 40)
+def redrawScreenWaiting(screen, content):
+    screen.fill((214, 165, 30))
+    content_Sur = game_Font.render(content, True, (0,0,0))
+    content_Rect = content_Sur.get_rect(center = (380, 380))
+    screen.blit(content_Sur, content_Rect)
     pygame.display.update()
 
 
 def main():
     run = True
+    wait = True
     n = Network()
     battleGroundDTO = n.getBattleGround()
     p1Rect.centerx = battleGroundDTO.get_player().get_centerx()
@@ -121,6 +136,40 @@ def main():
     p1 = Player(p1Rect, p1SurfaceList, bombP1)
     p2 = Player(p2Rect, p2SurfaceList, bombP2)
     battleGround = BattleGround(battleGroundDTO.get_groundMatrix(), p1, p2, bombSurface, boxGoSurface, boxSatSurface)
+    p1_p2_Ready = 0
+    title_Content = "Press [SPACE] to start!"
+    while run & wait:
+        battleGroundDTO = n.send(battleGroundDTO)
+        p2DTO = battleGroundDTO.get_player()
+        p2.setByDTO(p2DTO)
+        for event in pygame.event.get():  
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    p1.flag_StartGame = 1
+                    title_Content = "Waiting your friend..."
+            if event.type == playmusic:
+                sound_Game.play()
+            if event.type == StartGame1:
+                title_Content = "GO!"
+                pygame.time.set_timer(StartGame2, 750)
+            if event.type == StartGame2:
+                wait = False
+                break
+        p1DTO = playerConvert().toDTO(p1)
+        battleGroundDTO.set_player(p1DTO)
+        battleGroundDTO.set_player2(p2DTO)
+        if p2DTO.flag_StartGame == 1 and p1.flag_StartGame == 1 and p1_p2_Ready == 0:
+            p1_p2_Ready = 1
+            sound_Ready_Go.play()
+            title_Content = "READY?"            
+            pygame.time.set_timer(StartGame1, 1600)        
+        redrawScreenWaiting(screen, title_Content)
+        
+            
     while run:
         battleGroundDTO = n.send(battleGroundDTO)
         p2DTO = battleGroundDTO.get_player()
@@ -163,8 +212,7 @@ def main():
             p2.gameWaiting()
             pygame.time.set_timer(P2RecoverEvt, 1000)
 
-        redrawScreen(screen, bombP1, battleGround)
-       
+        redrawScreen(screen, battleGround)     
 
 
         battleGroundDTO.set_groundMatrix(battleGround.getGroundMatrix())

@@ -6,7 +6,8 @@ from tkinter import CENTER
 import sys, random
 
 class PlayerDTO():
-    def __init__(self, centerx, centery, status, vel, playerIndex, recoverTime, listBomb):
+    def __init__(self, flag_StartGame, centerx, centery, status, vel, playerIndex, recoverTime, listBomb):
+        self.flag_StartGame = flag_StartGame
         self.centerx = centerx
         self.centery = centery
         self.vel = vel
@@ -15,7 +16,7 @@ class PlayerDTO():
         self.status = status
         self.recoverTime = recoverTime
         self.listBomb = listBomb
-    
+        
       # Getter cho centerx
     def get_centerx(self):
         return self.centerx

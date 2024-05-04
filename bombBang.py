@@ -31,6 +31,9 @@ class BombBang():
             return True
         return False      
 
+    def setSurfaceBombbang(self, surfacce):
+        self.surfaceBombBang = surfacce
+
     # def setUpSurfaceExplore(self):
     #     for i in range(1, 5):
     #         arrayTemp = []

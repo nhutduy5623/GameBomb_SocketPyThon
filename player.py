@@ -20,6 +20,7 @@ class Player():
         self.listBomb = [bomb]
         self.status = 1
         self.recoverTime = 0
+        self.flag_StartGame = 0
 
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
