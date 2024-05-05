@@ -18,5 +18,5 @@ class bombConvert():
         bomb = Bomb(bombRect, bombSurfaceList)
         bomb.status = bombDTO.status
         bomb.timer = bombDTO.timer
-        bomb.bombBangSize = bombDTO.bombBangSize   
+        bomb.bombBangSize = bombDTO.get_bombBangSize()   
         return bomb

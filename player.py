@@ -17,7 +17,7 @@ class Player():
         self.surfaceList = surfaceList
         self.surface = surfaceList[0]
         self.maxBomb = 1
-        self.listBomb = [bomb]
+        self.listBomb = bomb
         self.status = 1
         self.recoverTime = 0
         self.flag_StartGame = 0

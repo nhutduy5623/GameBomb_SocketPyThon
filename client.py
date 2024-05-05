@@ -98,6 +98,13 @@ boxSatSkin = pygame.image.load('./img/boxsat.png')
 boxGoSurface = pygame.transform.scale(boxGoSkin, (50,50))
 boxSatSurface = pygame.transform.scale(boxSatSkin, (50,50))
 
+# Item
+itemBomb = pygame.image.load('./img/item_bomb.gif')  
+itemBombSize = pygame.image.load('./img/item_bombsize.gif')
+itemBombSurface = pygame.transform.scale(itemBomb, (50,50))
+itemBombSizeSurface = pygame.transform.scale(itemBombSize, (50,50))
+
+
 #Âm thanh
 sound_Game = pygame.mixer.Sound('sound/playgame.wav')
 playmusic = pygame.USEREVENT + 71
@@ -113,7 +120,7 @@ sound_Ready_Go = pygame.mixer.Sound('sound/ReadyGoEffects.mp3')
 def redrawScreen(screen, groundBt):
     screen.fill((214, 165, 30))
     groundBt.drawBattleGround(screen)   
-    pygame.display.update()
+    
 
 game_Font = pygame.font.Font('04B_19.ttf', 40)
 def redrawScreenWaiting(screen, content):
@@ -122,6 +129,12 @@ def redrawScreenWaiting(screen, content):
     content_Rect = content_Sur.get_rect(center = (380, 380))
     screen.blit(content_Sur, content_Rect)
     pygame.display.update()
+game_Font_ = pygame.font.Font('04B_19.ttf', 20)
+def drawScreenItemCount(screen, bombItems, sizeBomb):
+    content = "Bomb: "+str(bombItems) + "\n Size: "+str(sizeBomb)    
+    content_Sur = game_Font_.render(content, True, (0,0,0))
+    content_Rect = content_Sur.get_rect(center = (380, 15))
+    screen.blit(content_Sur, content_Rect)
 
 
 def main():
@@ -132,10 +145,11 @@ def main():
     p1Rect.centerx = battleGroundDTO.get_player().get_centerx()
     p1Rect.centery = battleGroundDTO.get_player().get_centery()
     bombP1 = Bomb(bombRect, bombSurfaceList)
+    bombP11 = Bomb(bombRect, bombSurfaceList)
     bombP2 = Bomb(bombP2Rect, bombSurfaceList)
-    p1 = Player(p1Rect, p1SurfaceList, bombP1)
-    p2 = Player(p2Rect, p2SurfaceList, bombP2)
-    battleGround = BattleGround(battleGroundDTO.get_groundMatrix(), p1, p2, bombSurface, boxGoSurface, boxSatSurface)
+    p1 = Player(p1Rect, p1SurfaceList, [bombP1])
+    p2 = Player(p2Rect, p2SurfaceList, [bombP2])
+    battleGround = BattleGround(battleGroundDTO.get_groundMatrix(), p1, p2, bombSurfaceList, boxGoSurface, boxSatSurface, itemBombSurface, itemBombSizeSurface)
     p1_p2_Ready = 0
     title_Content = "Press [SPACE] to start!"
     while run & wait:
@@ -169,7 +183,9 @@ def main():
             pygame.time.set_timer(StartGame1, 1600)        
         redrawScreenWaiting(screen, title_Content)
         
-            
+    last_bomb_placed_time = 0    
+    last_take_bombItem_time = 0 
+    last_take_bombSizeItem_time = 0     
     while run:
         battleGroundDTO = n.send(battleGroundDTO)
         p2DTO = battleGroundDTO.get_player()
@@ -181,8 +197,9 @@ def main():
                 pygame.quit()
                 sys.exit()
             if event.type == BombAnimateEvt:
-                if bombP1.getStatus() == 1:
-                    bombP1.animate()
+                for bomb in p1.getListBomb():
+                    if bomb.getStatus() == 1:
+                        bomb.animate()
                 pygame.time.set_timer(BombAnimateEvt, 200)
             if event.type == CountTimeEvt:
                 p1.increaseTimer_BombBang(100, sound_BombBang)
@@ -203,7 +220,8 @@ def main():
                 sound_BombBang.play()
                 bomb.Bang()
 
-        battleGround.playerAction(sound_PlaceBomb)
+        if battleGround.playerAction(sound_PlaceBomb, last_bomb_placed_time):
+            last_bomb_placed_time = pygame.time.get_ticks()
         battleGround.checkPlayer_BoxTouchingBombBang(screen)
         if p1.isGameOver():
             p1.gameWaiting()
@@ -212,9 +230,9 @@ def main():
             p2.gameWaiting()
             pygame.time.set_timer(P2RecoverEvt, 1000)
 
-        redrawScreen(screen, battleGround)     
-
-
+        redrawScreen(screen, battleGround)
+        drawScreenItemCount(screen, len(p1.getListBomb()), p1.getListBomb()[0].bombBangSize)  
+        pygame.display.update()   
         battleGroundDTO.set_groundMatrix(battleGround.getGroundMatrix())
         p1DTO = playerConvert().toDTO(p1)
         battleGroundDTO.set_player(p1DTO)

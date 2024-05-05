@@ -42,10 +42,10 @@ print("Waiting for a connection, Server Started")
 
 groundMatrix = [
     ['s','s','s','s','s','s','s','s','s','s','s','s','s','s','s'],
-    ['s','-','-','g','-','-','-','-','-','-','-','g','-','-','s'],
-    ['s','-','-','-','s','-','s','-','s','g','s','-','s','-','s'],
+    ['s','-','-','g','i_bs','-','-','-','-','-','-','g','-','-','s'],
+    ['s','-','s','-','s','-','s','-','s','g','s','-','s','-','s'],
     ['s','g','-','-','-','-','-','-','-','g','-','-','-','g','s'],
-    ['s','-','s','g','s','-','s','g','s','g','s','-','s','-','s'],
+    ['s','i_b','s','g','s','-','s','g','s','g','s','-','s','-','s'],
     ['s','-','-','g','-','-','-','g','-','g','-','-','-','-','s'],
     ['s','-','s','g','s','-','s','g','s','g','s','g','s','-','s'],
     ['s','-','-','g','-','-','-','g','-','-','-','g','-','-','s'],
@@ -59,8 +59,9 @@ groundMatrix = [
 ]
 
 bombP1 = BombDTO(-1000, 0, 0, 0, 1)
+bombP11 = BombDTO(-1000, 0, 0, 0, 1)
 bombP2 = BombDTO(-1000, 0, 0, 0, 1)
-p1 = PlayerDTO(0, 100, 100, 1, 1, 1, 0, [bombP1])
+p1 = PlayerDTO(0, 100, 100, 1, 1, 1, 0, [bombP1, bombP11])
 p2 = PlayerDTO(0, 700, 700, 1, 1, 2, 0, [bombP2])
 
 
@@ -83,6 +84,17 @@ def threaded_client(conn, battleGround_Idex):
                 print("Disconnected")
                 break
             else:
+                if battleGrounds[0].get_groundMatrix() != battleGrounds[1].get_groundMatrix():
+                    if battleGrounds[0].get_groundMatrix()!=groundMatrix:
+                        groundMatrix = battleGrounds[0].get_groundMatrix()
+                        battleGrounds[1].set_groundMatrix(groundMatrix)
+                    elif battleGrounds[1].get_groundMatrix()!=groundMatrix:
+                        groundMatrix = battleGrounds[1].get_groundMatrix() 
+                        battleGrounds[0].set_groundMatrix(groundMatrix)
+                else:
+                    groundMatrix = battleGrounds[0].get_groundMatrix()         
+                
+                
                 if battleGround_Idex == 1:
                     reply = battleGrounds[0]
                 else:

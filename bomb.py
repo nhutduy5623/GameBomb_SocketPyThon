@@ -9,7 +9,7 @@ class Bomb():
         self.surface = surfaceList[self.surfaceIndex]
         self.status = 0
         self.timer = 0
-        self.bombBangSize = 2     
+        self.bombBangSize = 1     
         self.bombBang_Surface = []
         self.setUpSurfaceBombBang()
         self.bombBang = [BombBang(self.bombBang_Surface[0][self.bombBangSize-1]),BombBang(self.bombBang_Surface[1][self.bombBangSize-1]),BombBang(self.bombBang_Surface[2][self.bombBangSize-1]),BombBang(self.bombBang_Surface[3][self.bombBangSize-1])]

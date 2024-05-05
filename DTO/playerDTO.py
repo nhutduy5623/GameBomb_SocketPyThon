@@ -12,7 +12,7 @@ class PlayerDTO():
         self.centery = centery
         self.vel = vel
         self.playerIndex = playerIndex
-        self.maxBomb = 1
+        self.maxBomb = 2
         self.status = status
         self.recoverTime = recoverTime
         self.listBomb = listBomb
